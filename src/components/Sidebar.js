@@ -41,7 +41,7 @@ render() {
       <div className="sidebar-icon">
         <SidebarIcon
           isOpen={this.props.isOpen}
-          handleClick={() => this.props.changeSidebarOpen()}
+          handleClick={(ev) => this.props.changeShowSidebar(ev)}
 
         />
       </div>
