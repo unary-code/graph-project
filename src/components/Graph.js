@@ -27,7 +27,7 @@ export default class Graph extends Component {
         /*<h3 className="block">TEST MESSAGE</h3>*/
     return <svg width="500" height="500" className="block">
 
-  <circle id="circle1" cx="50" cy="50" r={this.props.nodeRadius} fill="red" onMouseMove={() => console.log('foo')} onMouseEnter={(ev) => {ev.target.setAttribute('stroke', 'black'); ev.target.setAttribute('stroke-opacity', 1);}}
+  <circle id="circle1" cx={this.props.xVal} cy="50" r={this.props.nodeRadius} fill="red" onMouseMove={() => console.log('foo')} onMouseEnter={(ev) => {ev.target.setAttribute('stroke', 'black'); ev.target.setAttribute('stroke-opacity', 1);}}
   onMouseLeave={(ev) => {ev.target.setAttribute('stroke-opacity', 0);}}
   //onClick={this.clickNode()}
   //onClick={() => {this.setState({showSidebar: !this.state.showSidebar})}}

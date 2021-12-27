@@ -36,6 +36,7 @@ export default class SidebarContent extends Component {
           <div className="sidebar-link">Contact</div>
           <div className="slidecontainer">
         <input type="range" min="1" max="100" className="slider" id="myRange" onChange={(ev) => this.props.changeSize(ev)}/>
+        <input type="button" id="increaseX" onMouseDown={(ev) => this.props.startIncreaseX(ev)} onMouseUp={(ev) => this.props.stopIncreaseX(ev)}/>
         </div>
         </div>
       )}
