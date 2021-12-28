@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import { Transition } from 'react-transition-group'
+import {FaTrash} from 'react-icons/fa'
 
 // MODIFY THE DURATION TIME IN ORDER TO CHANGE HOW LONG THE TRANSITION TAKES
-const duration = 1000
+const duration = 100
 
 const sidebarStyle = {
   transition: `width ${duration}ms`
@@ -35,8 +36,14 @@ export default class SidebarContent extends Component {
           <div className="sidebar-link">About</div>
           <div className="sidebar-link">Contact</div>
           <div className="slidecontainer">
-        <input type="range" min="1" max="100" className="slider" id="myRange" onChange={(ev) => this.props.changeSize(ev)}/>
-        <input type="button" id="increaseX" onMouseDown={(ev) => this.props.startIncreaseX(ev)} onMouseUp={(ev) => this.props.stopIncreaseX(ev)}/>
+        <div id="selectedIdTitle">{"Selected Node: " + this.props.selectedId}</div>
+        <label for="changeRadiusButton">Change the Radius</label>
+        <input type="range" min="1" max="100" className="slider" id="changeRadiusButton" onChange={(ev) => this.props.changeSize(ev)}/>
+        <br />
+        <input type="button" id="increaseX" value="Hold Click to Shift Right" onMouseDown={(ev) => this.props.startIncreaseX(ev)} onMouseUp={(ev) => this.props.stopIncreaseX(ev)}/>
+        <br />
+        <input type="button" id="deleteNode" value="Delete" onClick={(ev) => this.props.deleteNode(ev)} />
+        <FaTrash />
         </div>
         </div>
       )}

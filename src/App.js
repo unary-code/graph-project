@@ -9,7 +9,7 @@ import ContentPackage from './components/ContentPackage'
 function App() {
   return (
     <div>
-    <div className="app" style={{background: "#00ff00"}}>
+    <div className="app" style={{background: "#e3ffff"}}>
         {/*
         <Sidebar />
         <Content />

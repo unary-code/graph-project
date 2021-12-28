@@ -34,9 +34,11 @@ export default class Sidebar extends Component {
 render() {
     return <div className="sidebar-container">
       <SidebarContent isOpen={this.props.isOpen}
+      selectedId={this.props.selectedId}
       changeSize={(ev) => this.props.changeSize(ev)}
       startIncreaseX={this.props.startIncreaseX}
       stopIncreaseX={this.props.stopIncreaseX}
+      deleteNode={this.props.deleteNode}
       />
       <div className="sidebar-icon">
         <SidebarIcon
