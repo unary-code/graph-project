@@ -432,7 +432,7 @@ export default class GraphPackage extends Component {
 
         if (ev.type == 'click') {
 
-            if (!this.state.addingEle.edge) {
+            if (this.state.addingEle.node) {
             console.log("Left click");
 
             console.log("clientCoords=", clientCoords);
