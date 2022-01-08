@@ -35,6 +35,8 @@ export default class GraphPackage extends Component {
 
     constructor(props) {
         super(props);
+
+        /*
         this.state = {
             showSidebar: false,
             selectedNode: null,
@@ -59,6 +61,83 @@ export default class GraphPackage extends Component {
             },
             helperEdge: DEFAULT_HELPER_EDGE
         };
+        */
+
+        this.state = {
+            showSidebar: false,
+            sidebar: {
+                show: true,
+                type: 'node',
+            },
+            selectedEle: {
+                id: 'node1',
+                type: 'node'
+            },
+            borderedEle: {
+                id: 'node1',
+                type: 'node'
+            },
+            selectedNode: null,
+            borderedNode: null,
+            nodeRadius: 20,
+            toggleIncreaseX: false,
+            x: 30,
+            numNodes: 4,
+            numNodesEver: 4,
+            numEdges: 3,
+            numEdgesEver: 3,
+            nodes: {
+                node1: {
+                    x: 112,
+                    y: 102,
+                    radius: 25
+                },
+                node2: {
+                    x: 389,
+                    y: 40,
+                    radius: 25
+                },
+                node3: {
+                    x: 349,
+                    y: 313,
+                    radius: 25
+                },
+                node4: {
+                    x: 129,
+                    y: 263,
+                    radius: 25
+                }
+            },
+            edges: {
+                edge1: {
+                    startId: "node3",
+                    endId: "node4",
+                    angle: -2.91811605244916
+                },
+                edge2: {
+                    startId: "node2",
+                    endId: "node4",
+                    angle: 2.432649725361244
+                },
+                edge3: {
+                    startId: "node1",
+                    endId: "node3",
+                    angle: 0.7274274753018679
+                }
+            },
+            addingEle: {
+                node: false,
+                edge: false
+            },
+            helperNode: {
+                x: 248,
+                y: 293,
+                visible: false
+            },
+            helperEdge: DEFAULT_HELPER_EDGE
+        }
+        
+        
     }
 
     clickNode = () => {
@@ -74,6 +153,14 @@ export default class GraphPackage extends Component {
     
         const curShowSidebar = this.state.showSidebar;
         //this.setState({showSidebar: curShowSidebar});
+    }
+
+    calculateAngle = (startId, endId) => {
+        let startPos = {x: this.state.nodes[startId].x, y: this.state.nodes[startId].y};
+        let endPos = {x: this.state.nodes[endId].x, y: this.state.nodes[endId].y};
+
+        let angle = Math.atan2((endPos.y-startPos.y), (endPos.x-startPos.x));
+        return angle;
     }
 
     handleClickNode = (ev) => {
@@ -95,14 +182,23 @@ export default class GraphPackage extends Component {
                 // You have already clicked on a node.
                 // This current click is on a node that should be the ending node of the edge that's being added.
                 
-                let newEdge = {startId: this.state.helperEdge.startId, endId: ev.target.id};
+                let newEdge = {startId: this.state.helperEdge.startId, endId: ev.target.id, angle: this.calculateAngle(this.state.helperEdge.startId, ev.target.id)};
 
                 let edgeId = 'edge'+(this.state.numEdgesEver+1);
 
                 let newEdges = this.state.edges;
-                newEdges[edgeId] = newEdge;
+                let newNumEdges = this.state.numEdges;
+                let newNumEdgesEver = this.state.numEdgesEver;
 
-                this.setState({...this.state, numEdges: this.state.numEdges+1, numEdgesEver: this.state.numEdgesEver+1, helperEdge: DEFAULT_HELPER_EDGE, edges: newEdges},
+                // If the 2nd clicked node (the one just clicked on) is not the same
+                // as the 1st clicked node, then set the variables to be reflective of adding a new edge.
+                if (ev.target.id != this.state.helperEdge.startId) {
+                    newEdges[edgeId] = newEdge;
+                    newNumEdges += 1;
+                    newNumEdgesEver += 1;
+                }
+
+                this.setState({...this.state, numEdges: newNumEdges, numEdgesEver: newNumEdgesEver, helperEdge: DEFAULT_HELPER_EDGE, edges: newEdges},
                     function() {
                         console.log(this.state.edges);
                     });
@@ -132,6 +228,17 @@ export default class GraphPackage extends Component {
         }
 
         this.changeShowSidebar(ev);
+
+    }
+
+    handleClickEdge = (ev) => {
+        console.log("ev=", ev);
+
+        // Change show sidebar but for edge
+
+        // Node sidebar can 1) change the radius of the node,
+        // 2) increase the x position of the node
+        // Both node and edge sidebars
 
     }
 
@@ -183,10 +290,15 @@ export default class GraphPackage extends Component {
 
         if (newSelectedNodeId == null) {
             // Deselect the stroke
-            ev.target.setAttribute('stroke-opacity', 0);
+
+            this.state.borderedNode = null;
+
+            //ev.target.setAttribute('stroke-opacity', 0);
         } else {
-            // Select the stroke
-            ev.target.setAttribute('stroke-opacity', 1);
+            // Select the stroke of the clicked node
+
+            this.state.borderedNode = clickedNodeId;
+            //ev.target.setAttribute('stroke-opacity', 1);
         }
 
         this.setState({...this.state, showSidebar: newShowSidebar, selectedNode: newSelectedNodeId}, function() {
@@ -432,7 +544,7 @@ export default class GraphPackage extends Component {
 
         if (ev.type == 'click') {
 
-            if (!this.state.addingEle.edge) {
+            if (this.state.addingEle.node && !this.state.addingEle.edge) {
             console.log("Left click");
 
             console.log("clientCoords=", clientCoords);
@@ -506,6 +618,7 @@ export default class GraphPackage extends Component {
         <div className="horizontalSidebar">
             <input type="button" name="toggleAddingNode" id="toggleAddingNode" onClick={(ev) => this.toggleAddingEle(ev)} value={this.state.addingEle.node ? "Cancel adding nodes" : "Add nodes"} />
             <input type="button" name="toggleAddingEdge" id="toggleAddingEdge" onClick={(ev) => this.toggleAddingEle(ev)} value={this.state.addingEle.edge ? "Cancel adding edges" : "Add edges"} />
+            <input type="button" name="printState" id="printState"  onClick={(ev) => {console.log("this.state=", this.state)}} value="Print current State" />
         </div>
 
         {/*
@@ -534,25 +647,14 @@ export default class GraphPackage extends Component {
     onClick={(ev) => this.handleSvgClick(ev)}
     
     >
-        {
-            Object.entries(this.state.nodes).map(([nodeId, node]) => <circle key={nodeId} id={nodeId} cx={node.x} cy={node.y} r={node.radius} fill="#aa0000"
-            /*
-            onMouseEnter={(ev) => {ev.target.setAttribute('stroke', 'black'); ev.target.setAttribute('stroke-width', '5'); ev.target.setAttribute('stroke-opacity', 1);}}
-            onMouseLeave={(ev) => { if (nodeId!=this.state.selectedNode) {ev.target.setAttribute('stroke-opacity', 0);}}}
-            */
-            onMouseEnter={(ev) => {this.setState({...this.state, borderedNode: nodeId})}}
-            onMouseLeave={(ev) => { if (nodeId!=this.state.selectedNode) {this.setState({...this.state, borderedNode: null})}}}
-            onClick={(ev) => this.handleClickNode(ev)}
-            style={{stroke: 'black', strokeWidth: '5', strokeOpacity: (this.state.borderedNode==nodeId)?'1':'0'}}
-            />)
-        }
 
         {
             <>
             <defs>
             {
                     Object.entries(this.state.edges).map(([edgeId, edge]) =>  <marker id={"marker"+edgeId} key={"marker"+edgeId} markerWidth="10" markerHeight="7" 
-                    refX="0" refY="3.5" orient="auto"
+                    refX={10+this.state.nodes[edge.endId].radius} refY="3.5" orient="auto"
+                    markerUnits="userSpaceOnUse"
                     >
                     <polygon points="0 0, 10 3.5, 0 7" />
                     </marker>)
@@ -561,8 +663,20 @@ export default class GraphPackage extends Component {
         </defs>
         {
             Object.entries(this.state.edges).map(([edgeId, edge]) => <line key={"line"+edgeId} x1={this.state.nodes[this.state.edges[edgeId].startId].x} y1={this.state.nodes[this.state.edges[edgeId].startId].y}
-            x2={this.state.nodes[this.state.edges[edgeId].endId].x-10} y2={this.state.nodes[this.state.edges[edgeId].endId].y-3.5} stroke="#000" 
+            x2={this.state.nodes[this.state.edges[edgeId].endId].x} y2={this.state.nodes[this.state.edges[edgeId].endId].y} stroke="#000" 
             strokeWidth="1" markerEnd={"url(#marker"+edgeId+")"} 
+            opacity="1"
+            onClick={this.handleClickEdge}
+            />)
+        }
+
+        {
+            Object.entries(this.state.edges).map(([edgeId, edge]) => <line key={"line"+edgeId} x1={this.state.nodes[this.state.edges[edgeId].startId].x} y1={this.state.nodes[this.state.edges[edgeId].startId].y}
+            x2={this.state.nodes[this.state.edges[edgeId].endId].x} y2={this.state.nodes[this.state.edges[edgeId].endId].y} stroke="#000" 
+            strokeWidth="7"
+            //markerEnd={"url(#marker"+edgeId+")"}
+            opacity="0.1" 
+            onClick={this.handleClickEdge}
             />)
         }
 
@@ -595,6 +709,19 @@ export default class GraphPackage extends Component {
            visibility={this.state.helperEdge.visible ? "visible" : "hidden"}
            opacity="0.4"/>
            </>
+        }
+
+        {
+            Object.entries(this.state.nodes).map(([nodeId, node]) => <circle key={nodeId} id={nodeId} cx={node.x} cy={node.y} r={node.radius} fill="#aa0000"
+            /*
+            onMouseEnter={(ev) => {ev.target.setAttribute('stroke', 'black'); ev.target.setAttribute('stroke-width', '5'); ev.target.setAttribute('stroke-opacity', 1);}}
+            onMouseLeave={(ev) => { if (nodeId!=this.state.selectedNode) {ev.target.setAttribute('stroke-opacity', 0);}}}
+            */
+            onMouseEnter={(ev) => { if (!this.state.showSidebar) {this.setState({...this.state, borderedNode: nodeId})}   }}
+            onMouseLeave={(ev) => { if (!this.state.showSidebar && nodeId!=this.state.selectedNode) {this.setState({...this.state, borderedNode: null})}}}
+            onClick={(ev) => this.handleClickNode(ev)}
+            style={{stroke: 'black', strokeWidth: '5', strokeOpacity: (this.state.borderedNode==nodeId)?'1':'0'}}
+            />)
         }
 
         {/*
